@@ -7,19 +7,8 @@
 
 - git clone
 - get token bot
-- make
-- add run.sh and execute
-
-```sh
-#!/bin/bash
-
-set -eu
-
-export CONBOT_SLACK_BOT_TOKEN="YOUR_TOKEN"
-export CONBOT_CONSUL="localhost:8500"
-make build
-./conbot
-```
+- `cp env.sample env` and edit
+- `docker-compose up --build -d`
 
 ## Usage
 
