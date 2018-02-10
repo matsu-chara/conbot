@@ -1,0 +1,7 @@
+conbot
+*.test
+.idea
+vendor
+Gopkg.lock
+
+run.sh
