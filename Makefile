@@ -15,7 +15,6 @@ dep:
 	dep ensure
 
 lint:
-	test -z "$$(gofmt -s -d .)" || (gofmt -s -d .; exit 1)
 	go vet ./...
 	golint -set_exit_status $$(go list ./...)
 
