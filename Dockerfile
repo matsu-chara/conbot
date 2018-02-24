@@ -8,7 +8,11 @@ RUN apk update && \
 
 RUN go get github.com/golang/dep/cmd/dep
 
+COPY Gopkg.toml .
+COPY Gopkg.lock .
+RUN dep ensure -vendor-only
+
 COPY . .
-RUN dep ensure && go install
+RUN go build && go install
 
 ENTRYPOINT ["conbot"]

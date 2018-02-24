@@ -11,9 +11,10 @@ import (
 // Run activate bot routine
 func Run(api *slack.Client, conbot *consul.ConbotClient) int {
 	rtm := api.NewRTM()
-	commandHandler := handler.New(rtm, conbot)
-
 	go rtm.ManageConnection()
+
+	// initialized when connected
+	var commandHandler *handler.CommandHandler
 
 	for {
 		select {
@@ -23,7 +24,12 @@ func Run(api *slack.Client, conbot *consul.ConbotClient) int {
 				log.Print("hello")
 			case *slack.ConnectedEvent:
 				log.Print("connected")
-				commandHandler.SetBotInfo(ev.Info.User.ID, ev.Info.User.Name)
+				commandHandler = handler.New(
+					rtm,
+					conbot,
+					ev.Info.User.ID,
+					ev.Info.User.Name,
+				)
 			case *slack.InvalidAuthEvent:
 				log.Printf("Invalid credentials. %v", ev)
 				return 1

@@ -1,18 +1,25 @@
 package handler
 
-// HandleCatalog parse arg, call catalog api and format.
-// command ex: catalog stg account
-func (handler *CommandHandler) handleCatalog(args []string) []string {
-	servicePrefix := ""
-	tagExact := ""
-	if len(args) >= 1 {
-		servicePrefix = args[0]
-	}
-	if len(args) >= 2 {
-		tagExact = args[1]
-	}
+import (
+	"github.com/matsu-chara/conbot/consul/domain/query"
+)
 
-	catalog, err := handler.conbotClient.GetCatalog(servicePrefix, tagExact)
+type catalogArg struct {
+	servicePrefixes query.ServicePrefixes
+	tagExacts       query.TagExacts
+}
+
+func parseCatalogArg(args []string) catalogArg {
+	servicePrefixes := query.ParseServicePrefixes(args, 0)
+	tagExacts := query.ParseTagExacts(args, 1)
+	return catalogArg{servicePrefixes, tagExacts}
+}
+
+// HandleCatalog parse arg, call catalog api and format.
+// command ex: catalog service
+func (handler *CommandHandler) handleCatalog(args []string) []string {
+	parsedArg := parseCatalogArg(args)
+	catalog, err := handler.conbotClient.GetCatalog(parsedArg.servicePrefixes, parsedArg.tagExacts)
 	if err != nil {
 		return []string{err.Error()}
 	}

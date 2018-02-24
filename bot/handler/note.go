@@ -1,23 +1,31 @@
 package handler
 
-// HandleNote parse arg, get nodes and format.
-// command ex: note stg account
-func (handler *CommandHandler) handleNote(args []string) []string {
-	servicePrefix := ""
-	tagExact := ""
-	if len(args) >= 1 {
-		servicePrefix = args[0]
-	}
-	if len(args) >= 2 {
-		tagExact = args[1]
-	}
+import (
+	"github.com/matsu-chara/conbot/consul/domain/query"
+)
 
-	catalog, err := handler.conbotClient.GetCatalog(servicePrefix, tagExact)
+type noteArg struct {
+	servicePrefixes query.ServicePrefixes
+	tagExacts       query.TagExacts
+}
+
+func parseNoteArg(args []string) noteArg {
+	servicePrefixes := query.ParseServicePrefixes(args, 0)
+	tagExacts := query.ParseTagExacts(args, 1)
+	return noteArg{servicePrefixes, tagExacts}
+}
+
+// HandleNote parse arg, get notes and format.
+// command ex: note service
+func (handler *CommandHandler) handleNote(args []string) []string {
+	parsedArg := parseNoteArg(args)
+
+	catalog, err := handler.conbotClient.GetCatalog(parsedArg.servicePrefixes, parsedArg.tagExacts)
 	if err != nil {
 		return []string{err.Error()}
 	}
 
-	note, err := handler.conbotClient.GetNote(catalog, tagExact)
+	note, err := handler.conbotClient.GetNote(catalog, parsedArg.tagExacts)
 	if err != nil {
 		return []string{err.Error()}
 	}
