@@ -2,7 +2,6 @@ conbot
 *.test
 .idea
 vendor
-Gopkg.lock
 
 env
 run.sh
